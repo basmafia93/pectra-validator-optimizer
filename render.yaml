@@ -3,7 +3,9 @@ services:
     name: pectra-validator-optimizer
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: streamlit run validator_optimizer.py --server.address=0.0.0.0 --server.port=$PORT
+    startCommand: streamlit run validator_optimizer.py --server.address=0.0.0.0 --server.port=$PORT --server.headless=true --server.enableCORS=true --server.enableXsrfProtection=true
     envVars:
       - key: PYTHON_VERSION
-        value: 3.9.18 
+        value: 3.9.18
+      - key: PORT
+        value: 10000 
