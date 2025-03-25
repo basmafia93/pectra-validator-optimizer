@@ -2,6 +2,9 @@ streamlit==1.32.2
 pandas==2.2.1
 plotly==5.19.0
 numpy==1.26.4
-python-dateutil>=2.8.2
-pytz>=2020.1
-six>=1.5 
+python-dateutil==2.8.2
+pytz==2024.1
+six==1.16.0
+protobuf==4.25.1
+altair<6.0
+watchdog==3.0.0 
