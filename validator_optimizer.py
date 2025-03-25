@@ -438,77 +438,39 @@ try:
         pectra_total_apr = pectra_cl_apr + pectra_el_apr
         
         # Calculate improvements
-        improvement = ((pectra_total_rewards - pectra_initial_deposit_costs) / (standard_total_rewards - standard_initial_deposit_costs) - 1) * 100
-        total_improvement = ((pectra_total_rewards - pectra_initial_deposit_costs) / (standard_total_rewards - standard_initial_deposit_costs) - 1) * 100
+        standard_total = standard_total_rewards - standard_initial_deposit_costs + standard_el_rewards
+        pectra_total = pectra_total_rewards - pectra_initial_deposit_costs + pectra_el_rewards
+        reward_improvement = pectra_total - standard_total
+        total_improvement = (reward_improvement / standard_total) * 100
         
         # Calculate APR improvements based on actual APR differences
-        cl_apr_improvement = pectra_cl_apr - standard_cl_apr
         total_apr_improvement = pectra_total_apr - standard_total_apr
 
         # Create side-by-side comparison sections
-        col1, col2 = st.columns(2)
+        st.markdown("<h3 class='table-title'>Performance Comparison</h3>", unsafe_allow_html=True)
+        st.markdown("<p class='table-description'>Compare the total rewards and APRs between staking methods over your investment period:</p>", unsafe_allow_html=True)
         
-        with col1:
-            # Reward comparison section
-            st.markdown("<h3 class='table-title'>Reward Comparison</h3>", unsafe_allow_html=True)
-            st.markdown("<p class='table-description'>Compare the total rewards earned through different staking methods over your investment period:</p>", unsafe_allow_html=True)
-            
-            rewards_data = {
-                'Metric': [
-                    '<strong>Consensus Layer Rewards</strong>',
-                    '<strong>Execution Layer Rewards</strong>',
-                    '<strong>Total Rewards (CL + EL)</strong>'
-                ],
-                'Standard 32-ETH validator with manual compounding': [
-                    format_eth(standard_total_rewards - standard_initial_deposit_costs),
-                    format_eth(standard_el_rewards),
-                    format_eth(standard_total_rewards - standard_initial_deposit_costs + standard_el_rewards)
-                ],
-                'Pectra Auto-compounding': [
-                    format_eth(pectra_total_rewards - pectra_initial_deposit_costs),
-                    format_eth(pectra_el_rewards),
-                    format_eth(pectra_total_rewards - pectra_initial_deposit_costs + pectra_el_rewards)
-                ],
-                'Improvement': [
-                    f"<span class='improvement-cell'>+{improvement:.1f}%</span>",
-                    "<span class='equal-cell'>Equal</span>",
-                    f"<span class='improvement-cell'>+{total_improvement:.1f}%</span>"
-                ]
-            }
-            
-            rewards_df = pd.DataFrame(rewards_data)
-            st.write(rewards_df.to_html(escape=False, index=False), unsafe_allow_html=True)
-
-        with col2:
-            # APR comparison section
-            st.markdown("<h3 class='table-title'>APR Comparison</h3>", unsafe_allow_html=True)
-            st.markdown("<p class='table-description'>Compare the effective Annual Percentage Rates (APR) between staking methods:</p>", unsafe_allow_html=True)
-            
-            apr_data = {
-                'Metric': [
-                    '<strong>Consensus Layer APR</strong>',
-                    '<strong>Execution Layer APR</strong>',
-                    '<strong>Total APR (CL + EL)</strong>'
-                ],
-                'Standard 32-ETH validator with manual compounding': [
-                    f"{standard_cl_apr:.2f}%",
-                    f"{standard_el_apr:.2f}%",
-                    f"{standard_total_apr:.2f}%"
-                ],
-                'Pectra Auto-compounding': [
-                    f"{pectra_cl_apr:.2f}%",
-                    f"{pectra_el_apr:.2f}%",
-                    f"{pectra_total_apr:.2f}%"
-                ],
-                'Improvement': [
-                    f"<span class='improvement-cell'>+{cl_apr_improvement:.2f}%</span>",
-                    "<span class='equal-cell'>Equal</span>",
-                    f"<span class='improvement-cell'>+{total_apr_improvement:.2f}%</span>"
-                ]
-            }
-            
-            apr_df = pd.DataFrame(apr_data)
-            st.write(apr_df.to_html(escape=False, index=False), unsafe_allow_html=True)
+        comparison_data = {
+            'Metric': [
+                '<strong>Total Rewards (CL + EL)</strong>',
+                '<strong>Total APR (CL + EL)</strong>'
+            ],
+            'Standard 32-ETH validator with manual compounding': [
+                f"{standard_total:.2f} ETH",
+                f"{standard_total_apr:.3f}%"
+            ],
+            'Pectra Auto-compounding': [
+                f"{pectra_total:.2f} ETH",
+                f"{pectra_total_apr:.3f}%"
+            ],
+            'Improvement': [
+                f"<span class='improvement-cell'>+{reward_improvement:.2f} ETH</span>",
+                f"<span class='improvement-cell'>+{total_apr_improvement:.3f}%</span>"
+            ]
+        }
+        
+        comparison_df = pd.DataFrame(comparison_data)
+        st.write(comparison_df.to_html(escape=False, index=False), unsafe_allow_html=True)
 
         # Add explanation
         st.markdown("""
