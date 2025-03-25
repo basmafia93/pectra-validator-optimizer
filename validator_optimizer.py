@@ -7,9 +7,52 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import traceback
 
-try:
-    st.set_page_config(page_title="Pectra Validator Stake Optimizer", layout="centered")
+# Set page configuration
+st.set_page_config(
+    page_title="Pectra Validator Stake Optimizer",
+    page_icon="🌟",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
+# Custom CSS
+st.markdown("""
+    <style>
+    .main {
+        padding: 2rem;
+    }
+    .stButton>button {
+        width: 100%;
+        padding: 0.5rem;
+        font-weight: 600;
+    }
+    .stProgress .st-bo {
+        background-color: #00A3FF;
+    }
+    h1 {
+        font-size: 2.5rem !important;
+        font-weight: 700 !important;
+        margin-bottom: 2rem !important;
+    }
+    h3 {
+        font-size: 1.5rem !important;
+        font-weight: 600 !important;
+        margin: 1.5rem 0 !important;
+    }
+    .stNumberInput input {
+        font-size: 1.1rem;
+    }
+    .info-box {
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        background-color: rgba(0, 163, 255, 0.1);
+        border: 1px solid rgba(0, 163, 255, 0.2);
+        margin: 1rem 0;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+try:
     def split_network_apr(network_apr_percent):
         """Split network APR into Consensus Layer and Execution Layer components"""
         # Based on current ratio: CL is ~82.5% and EL is ~17.5% of network APR
@@ -130,42 +173,89 @@ try:
 
     # Streamlit web app UI
     if __name__ == "__main__":
-        st.title("🚀 Pectra Validator Stake Optimizer")
-        st.write("Optimize validator stakes to maximize rewards while respecting the 2048 ETH cap")
+        # Header section
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            st.title("🌟 Pectra Validator Stake Optimizer")
+            st.markdown("""
+                <div class="info-box">
+                <h4>Welcome to the Professional Ethereum Staking Calculator</h4>
+                <p>Optimize your validator stakes to maximize rewards while respecting the 2048 ETH cap. 
+                Our advanced algorithm helps you find the perfect balance between initial stake and long-term growth.</p>
+                </div>
+            """, unsafe_allow_html=True)
 
-        # Input parameters section
-        st.write("### Input Parameters")
-        total_eth_available = st.number_input("💰 Total ETH Available", value=10000, step=1, format="%d", key="total_eth")
-        network_apr = st.number_input("📈 Network APR (%)", value=3.38, step=0.01, key="network_apr")
-        years = st.number_input("⏳ Time Horizon (Years)", value=3, step=1, key="years")
+        # Input parameters in sidebar
+        st.sidebar.markdown("## 📊 Configuration")
+        st.sidebar.markdown("Adjust your staking parameters below:")
         
-        st.write("---")
+        total_eth_available = st.sidebar.number_input(
+            "💰 Total ETH Available",
+            value=10000,
+            step=1,
+            format="%d",
+            help="Enter the total amount of ETH you have available for staking"
+        )
         
-        # Calculate APR split
+        network_apr = st.sidebar.number_input(
+            "📈 Network APR (%)",
+            value=3.38,
+            step=0.01,
+            help="Current network Annual Percentage Rate (APR)"
+        )
+        
+        years = st.sidebar.number_input(
+            "⏳ Time Horizon (Years)",
+            value=3,
+            step=1,
+            help="Number of years you plan to stake"
+        )
+
+        # Network stats in sidebar
+        st.sidebar.markdown("---")
+        st.sidebar.markdown("### 🌐 Network Statistics")
         cl_apr, el_apr = split_network_apr(network_apr)
+        col1, col2 = st.sidebar.columns(2)
+        with col1:
+            st.metric("CL APR", f"{cl_apr:.2f}%")
+        with col2:
+            st.metric("EL APR", f"{el_apr:.2f}%")
 
         # Calculate optimal distribution
         optimal_stake, main_count, remaining_eth, has_extra = find_optimal_distribution(total_eth_available, network_apr, years)
         
-        # Initialize validator lists first
+        # Initialize validator lists
         main_validators = [optimal_stake] * main_count
         extra_validator = [remaining_eth] if has_extra else []
         all_validators = main_validators + extra_validator
         
-        # Show optimal stake calculation
-        st.write("### 📊 Optimal Distribution")
-        st.write(f"""
-        With {format_eth(total_eth_available)} to stake:
-        - Optimal stake per validator: {format_eth(optimal_stake)}
-        - Number of validators: {main_count}
-        - Time to reach cap: {years} years
-        - Additional validator possible with remaining {format_eth(remaining_eth)}
-        """)
+        # Results in a clean grid layout
+        st.markdown("### 📊 Optimal Distribution Strategy")
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.metric(
+                "Optimal Stake per Validator",
+                format_eth(optimal_stake),
+                delta=f"{(optimal_stake/32 - 1)*100:.1f}% above minimum"
+            )
+        
+        with col2:
+            st.metric(
+                "Number of Validators",
+                str(main_count),
+                delta="Optimal split" if main_count > 1 else None
+            )
+        
+        with col3:
+            st.metric(
+                "Remaining ETH",
+                format_eth(remaining_eth),
+                delta="Can form new validator" if has_extra else "Below 32 ETH"
+            )
 
         # Track total balance over time
         validator_balances = []
-        
-        # Simulate each validator
         for initial_stake in all_validators:
             balances = simulate_validator_growth(initial_stake, cl_apr, years)
             validator_balances.append(balances)
@@ -174,47 +264,38 @@ try:
         chart_data = []
         year_labels = list(range(years + 1))
         
-        # Calculate balances for each year (main validators only)
         for year in year_labels:
             year_data = {'Year': f'Year {year}'}
-            # Sum up initial stake across main validators
             total_initial_stake = sum(main_validators)
-            # Sum up total balance across main validators
             total_balance = sum(validator_balances[i][year] for i in range(len(main_validators)))
-            # Calculate rewards as the difference
             cl_rewards = total_balance - total_initial_stake
             
             year_data['Initial Stake'] = total_initial_stake
             year_data['CL Rewards'] = cl_rewards
-            # Add max EB line (2048 × number of main validators)
             year_data['Max Effective Balance'] = 2048 * main_count
             chart_data.append(year_data)
         
-        # Convert to DataFrame for Streamlit
         df = pd.DataFrame(chart_data)
         
-        # Create the chart using Streamlit
+        # Create the chart
         st.write("### 📈 Validator Balances Over Time")
         st.write("This chart shows the initial stake and consensus layer rewards for main validators, with the maximum effective balance cap shown as a red dashed line.")
         
-        # Create figure
         fig = go.Figure()
         
-        # Add stacked bar chart
         fig.add_trace(go.Bar(
-            x=df['Year'],  # Use year labels directly
+            x=df['Year'],
             y=df['Initial Stake'],
             name='Initial Stake',
-            marker_color='rgba(100, 149, 237, 0.8)'  # Cornflower blue with transparency
+            marker_color='rgba(100, 149, 237, 0.8)'
         ))
         fig.add_trace(go.Bar(
-            x=df['Year'],  # Use year labels directly
+            x=df['Year'],
             y=df['CL Rewards'],
             name='CL Rewards',
-            marker_color='rgba(135, 206, 250, 0.8)'  # Light sky blue with transparency
+            marker_color='rgba(135, 206, 250, 0.8)'
         ))
         
-        # Add Max EB line using hline
         max_eb_value = df['Max Effective Balance'].iloc[0]
         fig.add_hline(
             y=max_eb_value,
@@ -224,7 +305,6 @@ try:
             name='MAX EB Cap'
         )
         
-        # Update layout
         fig.update_layout(
             barmode='stack',
             xaxis_title='Year',
@@ -233,31 +313,46 @@ try:
             showlegend=True,
             hovermode='x unified',
             yaxis=dict(
-                range=[0, max_eb_value * 1.2],  # Add 20% padding above max line
-                showgrid=False  # Remove horizontal grid lines
+                range=[0, max_eb_value * 1.2],
+                showgrid=False
             ),
             xaxis=dict(
-                showgrid=False,  # Remove vertical grid lines
-                range=[-0.5, len(df) - 0.5]  # Extend axis range for the line
+                showgrid=False,
+                range=[-0.5, len(df) - 0.5]
             ),
             plot_bgcolor='white'
         )
         
-        # Display the figure
         st.plotly_chart(fig, use_container_width=True)
 
-        st.info("""
-        **Key Assumptions:**
-        - Network APR split: Consensus Layer (82.5%) compounds with stake, Execution Layer (17.5%) paid to withdrawal address
-        - Validator balance is floored before calculating rewards (e.g., 32.9 ETH → 32 ETH)
-        - Maximum validator balance: 2048 ETH
-        - Optimal stake calculated to reach cap at target year
-        - Growth formula: Final = Initial * e^(APR * Years) for continuous compounding
-        - No partial withdrawals: All consensus layer rewards remain in validator
-        - Execution layer rewards are automatically sent to withdrawal address (not shown in balance graph)
-        """)
+        # Key assumptions in an expandable section
+        with st.expander("📋 Key Assumptions and Methodology", expanded=False):
+            st.markdown("""
+                <div class="info-box">
+                <h4>Calculation Methodology</h4>
+                
+                * **Network APR Split:**
+                  * Consensus Layer (82.5%): Compounds with stake
+                  * Execution Layer (17.5%): Paid to withdrawal address
+                
+                * **Reward Mechanics:**
+                  * Validator balance is floored before calculating rewards
+                  * Maximum validator balance: 2048 ETH
+                  * Optimal stake calculated to reach cap at target year
+                
+                * **Growth Model:**
+                  * Uses continuous compounding formula
+                  * No partial withdrawals considered
+                  * EL rewards sent directly to withdrawal address
+                </div>
+            """, unsafe_allow_html=True)
 
-        st.write("---")
+        # Footer
+        st.markdown("""
+            <div style="text-align: center; margin-top: 2rem; padding: 1rem; color: #666;">
+            <p>Powered by Pectra | Built for Ethereum Stakers</p>
+            </div>
+        """, unsafe_allow_html=True)
 
 except Exception as e:
     st.error(f"An error occurred: {str(e)}")
