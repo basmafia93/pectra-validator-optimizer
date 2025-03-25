@@ -1,8 +1,8 @@
 [server]
-headless = false
+headless = true
 runOnSave = true
-enableCORS = false
-enableXsrfProtection = false
+enableCORS = true
+enableXsrfProtection = true
 
 [browser]
 serverAddress = "localhost"
