@@ -426,8 +426,13 @@ try:
                 pectra_total_rewards += year_rewards
         
         # Calculate APRs first
-        standard_cl_apr = ((standard_total_rewards - standard_initial_deposit_costs) / total_eth_available / years) * 100
-        pectra_cl_apr = ((pectra_total_rewards - pectra_initial_deposit_costs) / total_eth_available / years) * 100
+        # For standard method, use initial stake
+        standard_initial_stake = standard_initial_validators * 32
+        standard_cl_apr = ((standard_total_rewards - standard_initial_deposit_costs) / standard_initial_stake / years) * 100
+        
+        # For Pectra method, use initial stake
+        pectra_initial_stake = sum(main_validators) + (remaining_eth if has_extra else 0)
+        pectra_cl_apr = ((pectra_total_rewards - pectra_initial_deposit_costs) / pectra_initial_stake / years) * 100
         
         # EL APR is the same for both methods
         standard_el_apr = el_apr
