@@ -33,11 +33,13 @@ st.markdown("""
         font-size: 2.5rem !important;
         font-weight: 700 !important;
         margin-bottom: 2rem !important;
+        color: #1a1a1a;
     }
     h3 {
         font-size: 1.5rem !important;
         font-weight: 600 !important;
         margin: 1.5rem 0 !important;
+        color: #1a1a1a;
     }
     .stNumberInput input {
         font-size: 1.1rem;
@@ -45,9 +47,69 @@ st.markdown("""
     .info-box {
         padding: 1.5rem;
         border-radius: 0.5rem;
-        background-color: rgba(0, 163, 255, 0.1);
-        border: 1px solid rgba(0, 163, 255, 0.2);
+        background-color: #f8f9fa;
+        border: 1px solid #e9ecef;
         margin: 1rem 0;
+        color: #495057;
+    }
+    .metric-container {
+        background-color: white;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        margin-bottom: 1rem;
+    }
+    .section-header {
+        color: #1a1a1a;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e9ecef;
+    }
+    .comparison-table {
+        background-color: white;
+        border-radius: 0.8rem;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        margin: 1.5rem 0;
+        overflow: hidden;
+    }
+    .comparison-table th {
+        background-color: #f1f5f9;
+        color: #334155;
+        font-weight: 600;
+        padding: 1.2rem 1rem;
+        text-align: left;
+        white-space: nowrap;
+    }
+    .comparison-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+        color: #1a1a1a;
+    }
+    .comparison-table tr:last-child td {
+        border-bottom: none;
+    }
+    .comparison-table tr:hover {
+        background-color: #f8fafc;
+    }
+    .improvement-cell {
+        font-weight: 600;
+        color: #059669;
+    }
+    .equal-cell {
+        color: #6b7280;
+        font-style: italic;
+    }
+    .table-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin: 2rem 0 1rem 0;
+    }
+    .table-description {
+        color: #4b5563;
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -92,7 +154,7 @@ try:
             if current >= 2048:
                 balances.append(2048)
                 continue
-            
+                
             # Calculate rewards based on floored balance
             rewards = calculate_cl_rewards(current, cl_apr)
             # Add rewards and cap at 2048
@@ -174,23 +236,20 @@ try:
     # Streamlit web app UI
     if __name__ == "__main__":
         # Header section
-        col1, col2 = st.columns([3, 1])
-        with col1:
-            st.title("🌟 Pectra Validator Stake Optimizer")
-            st.markdown("""
-                <div class="info-box">
-                <h4>Welcome to the Professional Ethereum Staking Calculator</h4>
-                <p>Optimize your validator stakes to maximize rewards while respecting the 2048 ETH cap. 
-                Our advanced algorithm helps you find the perfect balance between initial stake and long-term growth.</p>
-                </div>
-            """, unsafe_allow_html=True)
+        st.title("Pectra Validator Stake Optimizer")
+        st.markdown("""
+            <div class="info-box">
+            <p>Optimize your validator stakes to maximize rewards while respecting the 2048 ETH cap. 
+            Our advanced algorithm helps you find the perfect balance between initial stake and long-term growth.</p>
+            </div>
+        """, unsafe_allow_html=True)
 
         # Input parameters in sidebar
-        st.sidebar.markdown("## 📊 Configuration")
+        st.sidebar.markdown("## Configuration")
         st.sidebar.markdown("Adjust your staking parameters below:")
         
         total_eth_available = st.sidebar.number_input(
-            "💰 Total ETH Available",
+            "Total ETH Available",
             value=10000,
             step=1,
             format="%d",
@@ -198,14 +257,14 @@ try:
         )
         
         network_apr = st.sidebar.number_input(
-            "📈 Network APR (%)",
+            "Network APR (%)",
             value=3.38,
             step=0.01,
             help="Current network Annual Percentage Rate (APR)"
         )
         
         years = st.sidebar.number_input(
-            "⏳ Time Horizon (Years)",
+            "Time Horizon (Years)",
             value=3,
             step=1,
             help="Number of years you plan to stake"
@@ -213,13 +272,7 @@ try:
 
         # Network stats in sidebar
         st.sidebar.markdown("---")
-        st.sidebar.markdown("### 🌐 Network Statistics")
         cl_apr, el_apr = split_network_apr(network_apr)
-        col1, col2 = st.sidebar.columns(2)
-        with col1:
-            st.metric("CL APR", f"{cl_apr:.2f}%")
-        with col2:
-            st.metric("EL APR", f"{el_apr:.2f}%")
 
         # Calculate optimal distribution
         optimal_stake, main_count, remaining_eth, has_extra = find_optimal_distribution(total_eth_available, network_apr, years)
@@ -230,29 +283,30 @@ try:
         all_validators = main_validators + extra_validator
         
         # Results in a clean grid layout
-        st.markdown("### 📊 Optimal Distribution Strategy")
+        st.markdown("### Optimal Distribution Strategy")
         col1, col2, col3 = st.columns(3)
         
         with col1:
             st.metric(
                 "Optimal Stake per Validator",
-                format_eth(optimal_stake),
-                delta=f"{(optimal_stake/32 - 1)*100:.1f}% above minimum"
+                format_eth(optimal_stake)
             )
         
         with col2:
             st.metric(
                 "Number of Validators",
-                str(main_count),
-                delta="Optimal split" if main_count > 1 else None
+                str(main_count)
             )
         
         with col3:
             st.metric(
-                "Remaining ETH",
-                format_eth(remaining_eth),
-                delta="Can form new validator" if has_extra else "Below 32 ETH"
+                "Additional Validator",
+                format_eth(remaining_eth)
             )
+
+        # Calculate EL rewards for both methods
+        standard_el_rewards = calculate_el_rewards(total_eth_available, el_apr, years)
+        pectra_el_rewards = calculate_el_rewards(total_eth_available, el_apr, years)
 
         # Track total balance over time
         validator_balances = []
@@ -269,18 +323,23 @@ try:
             total_initial_stake = sum(main_validators)
             total_balance = sum(validator_balances[i][year] for i in range(len(main_validators)))
             cl_rewards = total_balance - total_initial_stake
+                
+            # Calculate EL rewards based on current balance
+            el_rewards = (el_apr / 100) * total_balance * year
             
             year_data['Initial Stake'] = total_initial_stake
             year_data['CL Rewards'] = cl_rewards
+            year_data['EL Rewards'] = el_rewards
             year_data['Max Effective Balance'] = 2048 * main_count
             chart_data.append(year_data)
         
         df = pd.DataFrame(chart_data)
         
         # Create the chart
-        st.write("### 📈 Validator Balances Over Time")
-        st.write("This chart shows the initial stake and consensus layer rewards for main validators, with the maximum effective balance cap shown as a red dashed line.")
+        st.write("### Validator Balances Over Time")
+        st.write("This chart shows the initial stake, consensus layer rewards, and execution layer rewards. The maximum effective balance cap (2048 ETH per validator) is shown as a red dashed line. Note that only the initial stake and consensus layer rewards count towards the validator balance cap - execution layer rewards are paid to the withdrawal address and do not affect the validator balance.")
         
+        # Create main chart with stacked bars
         fig = go.Figure()
         
         fig.add_trace(go.Bar(
@@ -294,6 +353,12 @@ try:
             y=df['CL Rewards'],
             name='CL Rewards',
             marker_color='rgba(135, 206, 250, 0.8)'
+        ))
+        fig.add_trace(go.Bar(
+            x=df['Year'],
+            y=df['EL Rewards'],
+            name='EL Rewards',
+            marker_color='rgba(200, 200, 200, 0.8)'
         ))
         
         max_eb_value = df['Max Effective Balance'].iloc[0]
@@ -309,7 +374,7 @@ try:
             barmode='stack',
             xaxis_title='Year',
             yaxis_title='ETH',
-            height=600,
+            height=400,
             showlegend=True,
             hovermode='x unified',
             yaxis=dict(
@@ -325,25 +390,163 @@ try:
         
         st.plotly_chart(fig, use_container_width=True)
 
+        # Calculate total rewards and deposit costs for standard method
+        standard_initial_validators = int(total_eth_available // 32)
+        standard_initial_deposit_costs = standard_initial_validators * 0.002
+        standard_total_rewards = 0
+        current_validators = standard_initial_validators
+        
+        for year in range(years):
+            year_rewards = 0
+            for _ in range(current_validators):
+                year_rewards += calculate_cl_rewards(32, cl_apr)
+            standard_total_rewards += year_rewards
+            
+            # Create new validators if rewards are sufficient
+            new_validators = int(year_rewards // 32.002)
+            if new_validators > 0:
+                current_validators += new_validators
+                standard_initial_deposit_costs += new_validators * 0.002
+        
+        # Calculate total rewards for Pectra method
+        pectra_total_rewards = 0
+        pectra_initial_deposit_costs = main_count * 0.002
+        if has_extra:
+            pectra_initial_deposit_costs += 0.002
+            
+        # Calculate rewards for each validator with auto-compounding
+        for validator in all_validators:
+            current_balance = validator
+            for year in range(years):
+                if current_balance >= 2048:
+                    year_rewards = 0
+                else:
+                    year_rewards = calculate_cl_rewards(current_balance, cl_apr)
+                    current_balance = min(current_balance + year_rewards, 2048)
+                pectra_total_rewards += year_rewards
+        
+        # Calculate APRs first
+        standard_cl_apr = ((standard_total_rewards - standard_initial_deposit_costs) / total_eth_available / years) * 100
+        pectra_cl_apr = ((pectra_total_rewards - pectra_initial_deposit_costs) / total_eth_available / years) * 100
+        
+        # EL APR is the same for both methods
+        standard_el_apr = el_apr
+        pectra_el_apr = el_apr
+        
+        # Calculate total APRs
+        standard_total_apr = standard_cl_apr + standard_el_apr
+        pectra_total_apr = pectra_cl_apr + pectra_el_apr
+        
+        # Calculate improvements
+        improvement = ((pectra_total_rewards - pectra_initial_deposit_costs) / (standard_total_rewards - standard_initial_deposit_costs) - 1) * 100
+        total_improvement = ((pectra_total_rewards - pectra_initial_deposit_costs) / (standard_total_rewards - standard_initial_deposit_costs) - 1) * 100
+        
+        # Calculate APR improvements based on actual APR differences
+        cl_apr_improvement = pectra_cl_apr - standard_cl_apr
+        total_apr_improvement = pectra_total_apr - standard_total_apr
+
+        # Create side-by-side comparison sections
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            # Reward comparison section
+            st.markdown("<h3 class='table-title'>Reward Comparison</h3>", unsafe_allow_html=True)
+            st.markdown("<p class='table-description'>Compare the total rewards earned through different staking methods over your investment period:</p>", unsafe_allow_html=True)
+            
+            rewards_data = {
+                'Metric': [
+                    '<strong>Consensus Layer Rewards</strong>',
+                    '<strong>Execution Layer Rewards</strong>',
+                    '<strong>Total Rewards (CL + EL)</strong>'
+                ],
+                'Standard 32-ETH validator with manual compounding': [
+                    format_eth(standard_total_rewards - standard_initial_deposit_costs),
+                    format_eth(standard_el_rewards),
+                    format_eth(standard_total_rewards - standard_initial_deposit_costs + standard_el_rewards)
+                ],
+                'Pectra Auto-compounding': [
+                    format_eth(pectra_total_rewards - pectra_initial_deposit_costs),
+                    format_eth(pectra_el_rewards),
+                    format_eth(pectra_total_rewards - pectra_initial_deposit_costs + pectra_el_rewards)
+                ],
+                'Improvement': [
+                    f"<span class='improvement-cell'>+{improvement:.1f}%</span>",
+                    "<span class='equal-cell'>Equal</span>",
+                    f"<span class='improvement-cell'>+{total_improvement:.1f}%</span>"
+                ]
+            }
+            
+            rewards_df = pd.DataFrame(rewards_data)
+            st.write(rewards_df.to_html(escape=False, index=False), unsafe_allow_html=True)
+
+        with col2:
+            # APR comparison section
+            st.markdown("<h3 class='table-title'>APR Comparison</h3>", unsafe_allow_html=True)
+            st.markdown("<p class='table-description'>Compare the effective Annual Percentage Rates (APR) between staking methods:</p>", unsafe_allow_html=True)
+            
+            apr_data = {
+                'Metric': [
+                    '<strong>Consensus Layer APR</strong>',
+                    '<strong>Execution Layer APR</strong>',
+                    '<strong>Total APR (CL + EL)</strong>'
+                ],
+                'Standard 32-ETH validator with manual compounding': [
+                    f"{standard_cl_apr:.2f}%",
+                    f"{standard_el_apr:.2f}%",
+                    f"{standard_total_apr:.2f}%"
+                ],
+                'Pectra Auto-compounding': [
+                    f"{pectra_cl_apr:.2f}%",
+                    f"{pectra_el_apr:.2f}%",
+                    f"{pectra_total_apr:.2f}%"
+                ],
+                'Improvement': [
+                    f"<span class='improvement-cell'>+{cl_apr_improvement:.2f}%</span>",
+                    "<span class='equal-cell'>Equal</span>",
+                    f"<span class='improvement-cell'>+{total_apr_improvement:.2f}%</span>"
+                ]
+            }
+            
+            apr_df = pd.DataFrame(apr_data)
+            st.write(apr_df.to_html(escape=False, index=False), unsafe_allow_html=True)
+
+        # Add explanation
+        st.markdown("""
+            <div class="info-box">
+            <p><strong>Why the difference?</strong></p>
+            <ul>
+                <li>Standard 32-ETH validator with manual compounding: Requires manual reinvestment of rewards to create new validators (costs 0.002 ETH per validator)</li>
+                <li>Pectra: Auto-compounding maximizes rewards by automatically reinvesting earnings</li>
+                <li>Optimized validator sizes: Pectra calculates the optimal stake to reach the 2048 ETH cap</li>
+            </ul>
+            </div>
+        """, unsafe_allow_html=True)
+
         # Key assumptions in an expandable section
-        with st.expander("📋 Key Assumptions and Methodology", expanded=False):
+        with st.expander("Key Assumptions and Methodology", expanded=False):
             st.markdown("""
                 <div class="info-box">
                 <h4>Calculation Methodology</h4>
                 
                 * **Network APR Split:**
-                  * Consensus Layer (82.5%): Compounds with stake
-                  * Execution Layer (17.5%): Paid to withdrawal address
+                  * Consensus Layer (82.5%): Rewards based on validator balance
+                  * Execution Layer (17.5%): Paid to withdrawal address (not restaked)
                 
-                * **Reward Mechanics:**
-                  * Validator balance is floored before calculating rewards
-                  * Maximum validator balance: 2048 ETH
-                  * Optimal stake calculated to reach cap at target year
+                * **Standard 32-ETH validator with manual compounding:**
+                  * Fixed 32 ETH per validator
+                  * Rewards = 32 ETH × CL_APR × years
+                  * New validators created when rewards ≥ 32.002 ETH
+                  * Deposit cost: 0.002 ETH per new validator
+                  * Rewards from new validators start in next year
+                  * Execution layer rewards are paid to withdrawal address (not restaked)
                 
-                * **Growth Model:**
-                  * Uses continuous compounding formula
-                  * No partial withdrawals considered
-                  * EL rewards sent directly to withdrawal address
+                * **Pectra Auto-compounding:**
+                  * Optimal stake calculated to reach 2048 ETH at target year
+                  * Daily rewards = floor(balance) × (CL_APR / 365)
+                  * Annual compounding: balance = min(balance + daily_rewards × 365, 2048)
+                  * All consensus layer rewards auto-compound until 2048 ETH cap
+                  * No new validators created
+                  * Execution layer rewards are paid to withdrawal address (not restaked)
                 </div>
             """, unsafe_allow_html=True)
 
