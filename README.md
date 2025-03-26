@@ -1,53 +1,36 @@
-# Pectra Validator Stake Optimizer
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-A Streamlit web application that helps Ethereum stakers optimize their validator deployment strategy and visualize long-term staking returns.
+## Getting Started
 
-## Features
+First, run the development server:
 
-- Calculate optimal starting stake based on APY and time horizon
-- Simulate growth with both consensus layer and execution layer rewards
-- Visualize staking returns over time
-- Export detailed growth projections as CSV
-- Support for multiple validator calculat
-
-## Installation
-
-1. Clone this repository
-2. Install the required packages:
 ```bash
-pip install -r requirements.txt
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-## Usage
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-Run the Streamlit app:
-```bash
-streamlit run validator_optimizer.py
-```
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-The app will open in your default web browser. You can then:
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-1. Enter your desired Consensus Layer APY (%)
-2. Set your investment time horizon in years
-3. Input the Execution Layer reward rate (%)
-4. Specify your total available ETH for staking
-5. View the optimal starting stake and number of validators you can create
-6. Simulate growth with different initial stake amounts
-7. Download the growth projection data as CSV
+## Learn More
 
-## How it Works
+To learn more about Next.js, take a look at the following resources:
 
-The optimizer uses compound interest mathematics to calculate the optimal starting stake that will reach the MaxEB (2048 ETH) cap at the end of your specified time horizon. This helps maximize returns while avoiding stake dilution from hitting the cap too early.
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-The growth simulation takes into account:
-- Consensus layer rewards (staking APY)
-- Execution layer rewards
-- MaxEB cap of 2048 ETH per validator
-- Compound interest effects
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Notes
+## Deploy on Vercel
 
-- All calculations assume a constant APY over the time horizon
-- The MaxEB cap is set at 2048 ETH per validator
-- Execution layer rewards are calculated based on the capped validator balance
-- The tool supports both discrete and continuous compounding models 
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
