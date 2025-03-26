@@ -1,15 +1,16 @@
 'use client';
 
+import * as React from "react"
 import { useState } from 'react';
 import { Card } from '../../components/ui/card';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
-import { Button } from '../../components/ui/button';
-import { Slider } from '../../components/ui/slider';
-import { Progress } from '../../components/ui/progress';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/table';
-import { Alert, AlertDescription, AlertTitle } from '../../components/ui/alert';
-import { InfoCircledIcon } from '@radix-ui/react-icons';
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
+import { Slider } from "@/components/ui/slider"
+import { Progress } from "@/components/ui/progress"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { InfoCircledIcon } from "@radix-ui/react-icons"
 
 interface ValidatorOptimizerProps {
   className?: string;

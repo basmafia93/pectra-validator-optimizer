@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Pectra Validator Optimizer
+
+A Next.js application for optimizing validator stakes.
+
+## Project Structure
+
+```
+├── src/
+│   ├── components/
+│   │   ├── ui/          # Reusable UI components
+│   │   ├── layout/      # Layout components
+│   │   └── features/    # Feature-specific components
+│   ├── lib/
+│   │   ├── utils/       # Utility functions
+│   │   ├── api/         # API client functions
+│   │   └── hooks/       # Custom React hooks
+│   ├── styles/          # Global styles and CSS
+│   └── types/           # TypeScript type definitions
+├── backend/
+│   ├── python/          # Python backend code
+│   └── api/             # API endpoints
+├── public/
+│   ├── assets/          # Static assets
+│   └── fonts/           # Font files
+└── config files...      # Configuration files
+```
 
 ## Getting Started
 
-First, run the development server:
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+2. Run the development server:
+   ```bash
+   npm run dev
+   ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Modern UI components with Tailwind CSS
+- Type-safe development with TypeScript
+- Python backend for validator optimization
+- Responsive design
+- Dark mode support
 
-## Learn More
+## Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+- Next.js 15.2.4
+- React
+- TypeScript
+- Tailwind CSS
+- Python (Backend)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Development
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run linting
+- `npm run test` - Run tests (when added)
 
-## Deploy on Vercel
+## Contributing
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
