@@ -8,7 +8,7 @@ A Streamlit web application that helps Ethereum stakers optimize their validator
 - Simulate growth with both consensus layer and execution layer rewards
 - Visualize staking returns over time
 - Export detailed growth projections as CSV
-- Support for multiple validator calculations
+- Support for multiple validator calculat
 
 ## Installation
 
